@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../services/theme_manager.dart';
 
 /// A base screen widget that provides consistent theming and structure.
 /// 
@@ -116,7 +115,7 @@ class BaseScreen extends StatelessWidget {
       centerTitle: centerTitle,
       backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
       elevation: 2,
-      shadowColor: isDark ? Colors.black : Colors.grey.withOpacity(0.2),
+      shadowColor: isDark ? Colors.black : Colors.grey.withValues(alpha: 0.2),
       surfaceTintColor: Colors.transparent,
       actions: actions,
       leading: showBackButton ? null : const SizedBox.shrink(),

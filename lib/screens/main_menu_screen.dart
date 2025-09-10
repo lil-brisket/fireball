@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import '../services/account_manager.dart';
 import '../services/player_data_manager.dart';
 import '../models/player.dart';
-import '../core/widgets/base_screen.dart';
 import '../core/widgets/bottom_navigation.dart';
 
 /// Main menu hub screen for the Shinobi RPG game.
@@ -117,7 +115,14 @@ class _MainMenuScreenState extends State<MainMenuScreen>
       } else {
         print('DEBUG: MainMenuScreen - No player data, refreshing database...');
         // If no player data, try to load from account manager
-        await AccountManager.instance.refreshDatabase();
+        final accountManager = AccountManager.instance;
+        
+        // Ensure AccountManager is initialized
+        if (!accountManager.isInitialized) {
+          await accountManager.initialize();
+        }
+        
+        await accountManager.refreshDatabase();
         final refreshedPlayer = PlayerDataManager.instance.currentPlayer;
         print('DEBUG: MainMenuScreen - Refreshed player: ${refreshedPlayer?.name ?? "null"}');
         setState(() {
@@ -150,15 +155,15 @@ class _MainMenuScreenState extends State<MainMenuScreen>
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      Colors.red.withOpacity(0.2),
-                      Colors.red.withOpacity(0.1),
+                      Colors.red.withValues(alpha: 0.2),
+                      Colors.red.withValues(alpha: 0.1),
                       Colors.transparent,
                     ],
                     stops: const [0.0, 0.7, 1.0],
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.red.withOpacity(0.3),
+                      color: Colors.red.withValues(alpha: 0.3),
                       blurRadius: 20,
                       spreadRadius: 4,
                     ),
@@ -171,25 +176,13 @@ class _MainMenuScreenState extends State<MainMenuScreen>
                 ),
               ),
               const SizedBox(height: 24),
-              // Main title
-              Text(
-                '🥷 Shinobi Village',
-                style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.2,
-                  fontSize: 32,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 16),
               // Welcome message
               Text(
                 _player != null 
                     ? 'Welcome back, ${_player!.name}'
                     : 'Welcome, Shinobi',
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Colors.white.withOpacity(0.9),
+                  color: Colors.white.withValues(alpha: 0.9),
                   letterSpacing: 0.5,
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
@@ -203,23 +196,32 @@ class _MainMenuScreenState extends State<MainMenuScreen>
 
   @override
   Widget build(BuildContext context) {
-    return BaseScreen(
-      title: '🥷 Shinobi Village',
-      showBackButton: false,
-      isLoading: _isLoading,
-      body: Column(
-        children: [
-          // Title section at the top
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
-              child: _buildTitle(),
-            ),
-          ),
-          // Bottom navigation at the bottom
-          BottomNavigation(currentRoute: '/main_menu'),
-        ],
+    if (_isLoading) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('🥷 Shinobi Village'),
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          foregroundColor: Theme.of(context).colorScheme.onSurface,
+          elevation: 0,
+        ),
+        body: const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('🥷 Shinobi Village'),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
+        elevation: 0,
       ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: _buildTitle(),
+      ),
+      bottomNavigationBar: const BottomNavigation(currentRoute: '/main_menu'),
     );
   }
 }

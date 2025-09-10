@@ -19,23 +19,23 @@ class PlayerAdapter extends TypeAdapter<Player> {
     return Player(
       id: fields[0] as String,
       name: fields[1] as String,
-      maxHp: fields[2] as int,
-      maxChakra: fields[4] as int,
-      strength: fields[6] as int,
-      defense: fields[7] as int,
-      level: fields[9] as int,
-      xp: fields[8] as int,
-      walletRyo: fields[16] as int,
-      bankRyo: fields[17] as int,
+      maxHp: fields[2] as int? ?? 100,
+      maxChakra: fields[4] as int? ?? 50,
+      strength: fields[6] as int? ?? 10,
+      defense: fields[7] as int? ?? 5,
+      level: fields[9] as int? ?? 1,
+      xp: fields[8] as int? ?? 0,
+      walletRyo: fields[16] as int? ?? 500,
+      bankRyo: fields[17] as int? ?? 500,
       availableJutsu: (fields[12] as List?)?.cast<Jutsu>(),
       inventory: (fields[13] as Map?)?.cast<String, InventoryEntry>(),
     )
-      ..currentHp = fields[3] as int
-      ..currentChakra = fields[5] as int
-      ..xpToNextLevel = fields[10] as int
-      ..isDefending = fields[11] as bool
-      ..temporaryAttackBuff = fields[14] as int
-      ..temporaryDefenseBuff = fields[15] as int;
+      ..currentHp = fields[3] as int? ?? 100
+      ..currentChakra = fields[5] as int? ?? 50
+      ..xpToNextLevel = fields[10] as int? ?? 150
+      ..isDefending = fields[11] as bool? ?? false
+      ..temporaryAttackBuff = fields[14] as int? ?? 0
+      ..temporaryDefenseBuff = fields[15] as int? ?? 0;
   }
 
   @override

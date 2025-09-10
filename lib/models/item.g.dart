@@ -19,10 +19,10 @@ class ItemAdapter extends TypeAdapter<Item> {
     return Item(
       name: fields[0] as String,
       type: fields[1] as ItemType,
-      effectValue: fields[2] as int,
+      effectValue: fields[2] as int? ?? 0,
       description: fields[3] as String,
-      canUseInBattle: fields[4] as bool,
-      canUseOutsideBattle: fields[5] as bool,
+      canUseInBattle: fields[4] as bool? ?? false,
+      canUseOutsideBattle: fields[5] as bool? ?? false,
     );
   }
 
@@ -67,7 +67,7 @@ class InventoryEntryAdapter extends TypeAdapter<InventoryEntry> {
     };
     return InventoryEntry(
       item: fields[0] as Item,
-      quantity: fields[1] as int,
+      quantity: fields[1] as int? ?? 1,
     );
   }
 

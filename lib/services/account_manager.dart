@@ -207,7 +207,7 @@ class AccountManager {
     for (final account in accounts) {
       print('DEBUG: Account - ID: ${account.id}, Username: ${account.username}');
     }
-    accounts.sort((a, b) => b.lastLoginAt.compareTo(a.lastLoginAt));
+    accounts.sort((a, b) => (b.lastLoginAt ?? DateTime.now()).compareTo(a.lastLoginAt ?? DateTime.now()));
     return accounts;
   }
 
@@ -229,7 +229,7 @@ class AccountManager {
     // List all accounts for debugging
     final accounts = _accountsBox.values.toList();
     for (final account in accounts) {
-      print('DEBUG: Found account - ID: ${account.id}, Username: ${account.username}, Created: ${account.createdAt}');
+      print('DEBUG: Found account - ID: ${account.id}, Username: ${account.username}, Created: ${account.createdAt?.toIso8601String() ?? 'null'}');
     }
   }
 
@@ -367,7 +367,7 @@ class AccountManager {
     final activeAccounts = accounts.where((a) => a.isActive).length;
     final totalPlayTime = accounts.fold<Duration>(
       Duration.zero,
-      (total, account) => total + DateTime.now().difference(account.createdAt),
+      (total, account) => total + DateTime.now().difference(account.createdAt ?? DateTime.now()),
     );
 
     return {
@@ -404,8 +404,8 @@ class AccountManager {
         'email': account.email,
         'gender': account.gender,
         'avatar': account.avatar,
-        'createdAt': account.createdAt.toIso8601String(),
-        'lastLoginAt': account.lastLoginAt.toIso8601String(),
+        'createdAt': account.createdAt?.toIso8601String() ?? 'null',
+        'lastLoginAt': account.lastLoginAt?.toIso8601String() ?? 'null',
         'isActive': account.isActive,
         'player': {
           'id': account.player.id,

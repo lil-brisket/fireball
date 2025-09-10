@@ -111,6 +111,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
       final accountManager = AccountManager.instance;
       final playerDataManager = PlayerDataManager.instance;
 
+      // Ensure AccountManager is initialized
+      if (!accountManager.isInitialized) {
+        await accountManager.initialize();
+      }
+
       // Check if an account already exists
       final existingAccounts = await accountManager.getAllAccounts();
       if (existingAccounts.isNotEmpty) {

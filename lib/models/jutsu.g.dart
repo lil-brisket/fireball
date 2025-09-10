@@ -18,9 +18,9 @@ class JutsuAdapter extends TypeAdapter<Jutsu> {
     };
     return Jutsu(
       name: fields[0] as String,
-      chakraCost: fields[1] as int,
-      minDamage: fields[2] as int,
-      maxDamage: fields[3] as int,
+      chakraCost: fields[1] as int? ?? 10,
+      minDamage: fields[2] as int? ?? 5,
+      maxDamage: fields[3] as int? ?? 15,
       type: fields[4] as JutsuType,
       description: fields[5] as String,
     );

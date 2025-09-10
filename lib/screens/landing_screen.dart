@@ -124,6 +124,12 @@ class _LandingScreenState extends State<LandingScreen>
   Future<void> _checkForExistingAccount() async {
     try {
       final accountManager = AccountManager.instance;
+      
+      // Ensure AccountManager is initialized
+      if (!accountManager.isInitialized) {
+        await accountManager.initialize();
+      }
+      
       final accounts = await accountManager.getAllAccounts();
       
       // Just check if accounts exist, don't auto-navigate
@@ -147,6 +153,12 @@ class _LandingScreenState extends State<LandingScreen>
     try {
       // Check if an account already exists
       final accountManager = AccountManager.instance;
+      
+      // Ensure AccountManager is initialized
+      if (!accountManager.isInitialized) {
+        await accountManager.initialize();
+      }
+      
       final accounts = await accountManager.getAllAccounts();
       
       if (accounts.isNotEmpty) {
@@ -168,6 +180,12 @@ class _LandingScreenState extends State<LandingScreen>
     try {
       // Check if an account exists
       final accountManager = AccountManager.instance;
+      
+      // Ensure AccountManager is initialized
+      if (!accountManager.isInitialized) {
+        await accountManager.initialize();
+      }
+      
       final accounts = await accountManager.getAllAccounts();
       
       if (accounts.isNotEmpty) {

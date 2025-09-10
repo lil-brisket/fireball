@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/player.dart';
 import '../services/player_data_manager.dart';
-import '../core/widgets/base_screen.dart';
+import '../core/widgets/bottom_navigation.dart';
 import 'bank_screen.dart';
 import 'shop_screen.dart';
 import 'enemy_selection_screen.dart';
@@ -87,35 +87,31 @@ class _VillageHubScreenState extends State<VillageHubScreen> with TickerProvider
   /// Builds a village location card
   Widget _buildVillageLocation(String title, IconData icon, Color color, VoidCallback onTap) {
     return Card(
-      elevation: 4,
+      elevation: 0,
+      margin: EdgeInsets.zero,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(1),
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(0.5),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: color.withOpacity(0.3)),
-                ),
-                child: Icon(
-                  icon,
-                  color: color,
-                  size: 32,
-                ),
+              Icon(
+                icon,
+                color: color,
+                size: 6,
               ),
-              const SizedBox(height: 12),
               Text(
                 title,
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   fontWeight: FontWeight.bold,
+                  fontSize: 5,
                 ),
                 textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
@@ -126,106 +122,108 @@ class _VillageHubScreenState extends State<VillageHubScreen> with TickerProvider
 
   @override
   Widget build(BuildContext context) {
-    return BaseScrollableScreen(
-      title: '🏘️ Village Hub',
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('🏘️ Village Hub'),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
+        elevation: 0,
+      ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : FadeTransition(
               opacity: _fadeAnimation,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Choose your destination',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.grey[600],
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Village locations grid
+                    GridView.count(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 0,
+                      mainAxisSpacing: 0,
+                      childAspectRatio: 0.15,
+                      children: [
+                        _buildVillageLocation(
+                          'Bank',
+                          Icons.account_balance,
+                          Colors.blue,
+                          () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const BankScreen(),
+                            ),
+                          ),
+                        ),
+                        _buildVillageLocation(
+                          'Shop',
+                          Icons.store,
+                          Colors.green,
+                          () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const ShopScreen(),
+                            ),
+                          ),
+                        ),
+                        _buildVillageLocation(
+                          'Training Dojo',
+                          Icons.fitness_center,
+                          Colors.purple,
+                          () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const TrainingDojoScreen(),
+                            ),
+                          ),
+                        ),
+                        _buildVillageLocation(
+                          'Battle',
+                          Icons.flash_on,
+                          Colors.red,
+                          () {
+                            if (_player != null) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => EnemySelectionScreen(player: _player!),
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                        _buildVillageLocation(
+                          'Quests',
+                          Icons.assignment,
+                          Colors.orange,
+                          () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const QuestScreen(),
+                            ),
+                          ),
+                        ),
+                        _buildVillageLocation(
+                          'Missions',
+                          Icons.flag,
+                          Colors.teal,
+                          () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const MissionScreen(),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                  // Village locations grid
-                  GridView.count(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                    childAspectRatio: 1.2,
-                    children: [
-                      _buildVillageLocation(
-                        'Bank',
-                        Icons.account_balance,
-                        Colors.blue,
-                        () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const BankScreen(),
-                          ),
-                        ),
-                      ),
-                      _buildVillageLocation(
-                        'Shop',
-                        Icons.store,
-                        Colors.green,
-                        () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const ShopScreen(),
-                          ),
-                        ),
-                      ),
-                      _buildVillageLocation(
-                        'Training Dojo',
-                        Icons.fitness_center,
-                        Colors.purple,
-                        () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const TrainingDojoScreen(),
-                          ),
-                        ),
-                      ),
-                      _buildVillageLocation(
-                        'Battle',
-                        Icons.flash_on,
-                        Colors.red,
-                        () {
-                          if (_player != null) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => EnemySelectionScreen(player: _player!),
-                              ),
-                            );
-                          }
-                        },
-                      ),
-                      _buildVillageLocation(
-                        'Quests',
-                        Icons.assignment,
-                        Colors.orange,
-                        () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const QuestScreen(),
-                          ),
-                        ),
-                      ),
-                      _buildVillageLocation(
-                        'Missions',
-                        Icons.flag,
-                        Colors.teal,
-                        () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const MissionScreen(),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
+      bottomNavigationBar: const BottomNavigation(currentRoute: '/village-hub'),
     );
   }
 }

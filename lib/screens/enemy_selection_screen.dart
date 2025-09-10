@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/enemy.dart';
 import '../models/player.dart';
-import '../core/widgets/base_screen.dart';
 import '../core/widgets/bottom_navigation.dart';
 import 'battle_screen.dart';
 
@@ -407,31 +406,28 @@ class _EnemySelectionScreenState extends State<EnemySelectionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BaseScreen(
-      title: '🥷 Enemy Selection',
-      body: Column(
-        children: [
-          // Scrollable content
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  _buildHeader(),
-                  const SizedBox(height: 16),
-                  _buildPlayerInfo(),
-                  const SizedBox(height: 16),
-                  _buildEnemyList(),
-                  const SizedBox(height: 16),
-                  _buildDifficultyLegend(),
-                ],
-              ),
-            ),
-          ),
-          // Bottom navigation
-          BottomNavigation(currentRoute: '/battle'),
-        ],
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('🥷 Enemy Selection'),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
+        elevation: 0,
       ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            _buildHeader(),
+            const SizedBox(height: 16),
+            _buildPlayerInfo(),
+            const SizedBox(height: 16),
+            _buildEnemyList(),
+            const SizedBox(height: 16),
+            _buildDifficultyLegend(),
+          ],
+        ),
+      ),
+      bottomNavigationBar: const BottomNavigation(currentRoute: '/battle'),
     );
   }
 }

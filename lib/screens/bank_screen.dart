@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../models/player.dart';
 import '../services/player_data_manager.dart';
-import '../core/widgets/base_screen.dart';
+import '../core/widgets/bottom_navigation.dart';
 
 /// Screen for banking operations including deposit, withdraw, and transfer.
 /// 
@@ -204,9 +204,9 @@ class _BankScreenState extends State<BankScreen> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.green.withOpacity(0.1),
+                color: Colors.green.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.green.withOpacity(0.3)),
+                border: Border.all(color: Colors.green.withValues(alpha: 0.3)),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -234,9 +234,9 @@ class _BankScreenState extends State<BankScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Column(
         children: [
@@ -327,10 +327,10 @@ class _BankScreenState extends State<BankScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
         decoration: BoxDecoration(
-          color: isSelected ? color : color.withOpacity(0.1),
+          color: isSelected ? color : color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color: isSelected ? color : color.withOpacity(0.3),
+            color: isSelected ? color : color.withValues(alpha: 0.3),
             width: isSelected ? 2 : 1,
           ),
         ),
@@ -502,17 +502,26 @@ class _BankScreenState extends State<BankScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BaseScrollableScreen(
-      title: '🥷 Bank',
-      body: Column(
-        children: [
-          _buildBalanceDisplay(),
-          const SizedBox(height: 16),
-          _buildOperationSelection(),
-          const SizedBox(height: 16),
-          _buildInputForm(),
-        ],
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('🥷 Bank'),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
+        elevation: 0,
       ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            _buildBalanceDisplay(),
+            const SizedBox(height: 16),
+            _buildOperationSelection(),
+            const SizedBox(height: 16),
+            _buildInputForm(),
+          ],
+        ),
+      ),
+      bottomNavigationBar: const BottomNavigation(currentRoute: '/bank'),
     );
   }
 }

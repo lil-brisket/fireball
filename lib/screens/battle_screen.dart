@@ -5,6 +5,7 @@ import '../models/jutsu.dart';
 import '../models/item.dart';
 import '../core/battle_engine.dart';
 import '../core/widgets/base_screen.dart';
+import '../core/widgets/bottom_navigation.dart';
 import '../services/player_data_manager.dart';
 import '../services/mission_manager.dart';
 
@@ -372,7 +373,7 @@ class _BattleScreenState extends State<BattleScreen> with TickerProviderStateMix
                 Text(
                   _enemy.name,
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    color: Colors.red,
+                    color: Colors.red.shade800,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -954,33 +955,30 @@ class _BattleScreenState extends State<BattleScreen> with TickerProviderStateMix
 
   @override
   Widget build(BuildContext context) {
-    return BaseScreen(
-      title: '🥷 Shinobi Battle',
-      body: Column(
-        children: [
-          // Battle content at the top
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  _buildBattleStatus(),
-                  const SizedBox(height: 16),
-                  _buildPlayerStats(),
-                  const SizedBox(height: 16),
-                  _buildEnemyStats(),
-                  const SizedBox(height: 16),
-                  _buildBattleLog(),
-                  const SizedBox(height: 16),
-                ],
-              ),
-            ),
-          ),
-          // Action buttons at the bottom
-          _buildActionButtons(),
-          const SizedBox(height: 16),
-        ],
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('🥷 Shinobi Battle'),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
+        elevation: 0,
       ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            _buildBattleStatus(),
+            const SizedBox(height: 16),
+            _buildPlayerStats(),
+            const SizedBox(height: 16),
+            _buildEnemyStats(),
+            const SizedBox(height: 16),
+            _buildBattleLog(),
+            const SizedBox(height: 16),
+            _buildActionButtons(),
+          ],
+        ),
+      ),
+      bottomNavigationBar: const BottomNavigation(currentRoute: '/village-hub'),
     );
   }
 }

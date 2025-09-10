@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../core/widgets/base_screen.dart';
+import '../core/widgets/bottom_navigation.dart';
 
 /// Placeholder screen for the world map feature.
 /// 
@@ -20,8 +20,13 @@ class MapScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BaseScrollableScreen(
-      title: '🗺️ World Map',
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('🗺️ World Map'),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
+        elevation: 0,
+      ),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
@@ -34,13 +39,6 @@ class MapScreen extends StatelessWidget {
                 color: Colors.grey[400],
               ),
               const SizedBox(height: 32),
-              Text(
-                'World Map',
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 16),
               Text(
                 'Coming Soon',
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
@@ -88,6 +86,7 @@ class MapScreen extends StatelessWidget {
           ),
         ),
       ),
+      bottomNavigationBar: const BottomNavigation(currentRoute: '/map'),
     );
   }
 

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/account.dart';
 import '../services/account_manager.dart';
-import '../core/widgets/base_screen.dart';
 import '../core/widgets/bottom_navigation.dart';
 import 'settings_screen.dart';
 import 'landing_screen.dart';
@@ -84,7 +83,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     if (shouldLogout == true) {
       // Clear current account
-      await AccountManager.instance.clearCurrentAccount();
+      final accountManager = AccountManager.instance;
+      
+      // Ensure AccountManager is initialized
+      if (!accountManager.isInitialized) {
+        await accountManager.initialize();
+      }
+      
+      await accountManager.clearCurrentAccount();
       
       // Navigate to landing screen
       if (mounted) {
@@ -408,30 +414,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   /// Formats a date for display
-  String _formatDate(DateTime date) {
+  String _formatDate(DateTime? date) {
+    if (date == null) return 'Unknown';
     return '${date.day}/${date.month}/${date.year}';
   }
 
   @override
   Widget build(BuildContext context) {
-    return BaseScreen(
-      title: '🥷 Profile',
-      isLoading: _isLoading,
-      actions: [
-        IconButton(
-          icon: Icon(
-            Icons.settings,
-            color: Theme.of(context).iconTheme.color,
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('🥷 Profile'),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
+        elevation: 0,
+        actions: [
+          IconButton(
+            icon: Icon(
+              Icons.settings,
+              color: Theme.of(context).iconTheme.color,
+            ),
+            onPressed: _openSettings,
+            tooltip: 'Settings',
           ),
-          onPressed: _openSettings,
-          tooltip: 'Settings',
-        ),
-      ],
-      body: Column(
-        children: [
-          // Scrollable content
-          Expanded(
-            child: SingleChildScrollView(
+        ],
+      ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: [
@@ -470,9 +479,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ],
               ),
             ),
-          ),
-        ],
-      ),
+      bottomNavigationBar: const BottomNavigation(currentRoute: '/profile'),
     );
   }
 }

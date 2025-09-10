@@ -132,7 +132,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
         avatar: _avatarUrlController.text.trim().isEmpty ? null : _avatarUrlController.text.trim(),
       );
       
-      await AccountManager.instance.updateAccount(updatedAccount);
+      final accountManager = AccountManager.instance;
+      
+      // Ensure AccountManager is initialized
+      if (!accountManager.isInitialized) {
+        await accountManager.initialize();
+      }
+      
+      await accountManager.updateAccount(updatedAccount);
       
       setState(() {
         _account = updatedAccount;
@@ -192,6 +199,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
         
         // Clear current account from AccountManager
         final accountManager = AccountManager.instance;
+        
+        // Ensure AccountManager is initialized
+        if (!accountManager.isInitialized) {
+          await accountManager.initialize();
+        }
+        
         await accountManager.clearCurrentAccount();
         
         // Navigate back to landing screen
@@ -293,7 +306,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     if (confirmed == true) {
       try {
-        await AccountManager.instance.clearAllAccounts();
+        final accountManager = AccountManager.instance;
+        
+        // Ensure AccountManager is initialized
+        if (!accountManager.isInitialized) {
+          await accountManager.initialize();
+        }
+        
+        await accountManager.clearAllAccounts();
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -323,7 +343,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
   /// Debug method to refresh database
   Future<void> _refreshDatabase() async {
     try {
-      await AccountManager.instance.refreshDatabase();
+      final accountManager = AccountManager.instance;
+      
+      // Ensure AccountManager is initialized
+      if (!accountManager.isInitialized) {
+        await accountManager.initialize();
+      }
+      
+      await accountManager.refreshDatabase();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -348,6 +375,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _testAccountPersistence() async {
     try {
       final accountManager = AccountManager.instance;
+      
+      // Ensure AccountManager is initialized
+      if (!accountManager.isInitialized) {
+        await accountManager.initialize();
+      }
       
       // Create a test account
       final testAccount = await accountManager.createAccount(

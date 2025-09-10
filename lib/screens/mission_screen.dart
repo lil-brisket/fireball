@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/player.dart';
 import '../services/player_data_manager.dart';
 import '../services/mission_manager.dart';
+import '../core/widgets/bottom_navigation.dart';
 
 /// A screen that displays available missions and allows players to accept them.
 /// 
@@ -122,15 +123,15 @@ class _MissionScreenState extends State<MissionScreen> {
   Color _getDifficultyColor(MissionDifficulty difficulty) {
     switch (difficulty) {
       case MissionDifficulty.D:
-        return Colors.green;
+        return Colors.green.shade700;
       case MissionDifficulty.C:
-        return Colors.blue;
+        return Colors.blue.shade700;
       case MissionDifficulty.B:
-        return Colors.orange;
+        return Colors.orange.shade700;
       case MissionDifficulty.A:
-        return Colors.red;
+        return Colors.red.shade700;
       case MissionDifficulty.S:
-        return Colors.purple;
+        return Colors.purple.shade700;
     }
   }
 
@@ -498,8 +499,14 @@ class _MissionScreenState extends State<MissionScreen> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Scaffold(
-        body: Center(
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('🥷 Missions'),
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          foregroundColor: Theme.of(context).colorScheme.onSurface,
+          elevation: 0,
+        ),
+        body: const Center(
           child: CircularProgressIndicator(),
         ),
       );
@@ -508,12 +515,15 @@ class _MissionScreenState extends State<MissionScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('🥷 Missions'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        centerTitle: true,
-        elevation: 4,
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
+        elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: Icon(
+              Icons.refresh,
+              color: Theme.of(context).iconTheme.color,
+            ),
             onPressed: _loadMissions,
             tooltip: 'Refresh Missions',
           ),
@@ -531,6 +541,7 @@ class _MissionScreenState extends State<MissionScreen> {
           ],
         ),
       ),
+      bottomNavigationBar: const BottomNavigation(currentRoute: '/village-hub'),
     );
   }
 }

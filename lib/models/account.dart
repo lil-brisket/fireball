@@ -48,11 +48,11 @@ class Account {
   
   /// When this account was created
   @HiveField(7)
-  final DateTime createdAt;
+  final DateTime? createdAt;
   
   /// When this account was last accessed
   @HiveField(8)
-  final DateTime lastLoginAt;
+  final DateTime? lastLoginAt;
   
   /// Whether this account is currently active
   @HiveField(9)
@@ -145,12 +145,12 @@ class Account {
   /// Gets the account age in days
   /// 
   /// Returns the number of days since account creation
-  int get accountAgeInDays => DateTime.now().difference(createdAt).inDays;
+  int get accountAgeInDays => DateTime.now().difference(createdAt ?? DateTime.now()).inDays;
 
   /// Gets the days since last login
   /// 
   /// Returns the number of days since last login
-  int get daysSinceLastLogin => DateTime.now().difference(lastLoginAt).inDays;
+  int get daysSinceLastLogin => DateTime.now().difference(lastLoginAt ?? DateTime.now()).inDays;
 
   @override
   String toString() {

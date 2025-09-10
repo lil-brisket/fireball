@@ -3,7 +3,7 @@ import '../models/player.dart';
 import '../models/item.dart';
 import '../services/player_data_manager.dart';
 import '../services/mission_manager.dart';
-import '../core/widgets/base_screen.dart';
+import '../core/widgets/bottom_navigation.dart';
 
 /// A screen that displays the player's inventory and allows item management.
 /// 
@@ -470,15 +470,24 @@ class _InventoryScreenState extends State<InventoryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BaseScrollableScreen(
-      title: '🥷 Inventory',
-      body: Column(
-        children: [
-          _buildPlayerStats(),
-          const SizedBox(height: 16),
-          _buildInventoryList(),
-        ],
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('🥷 Inventory'),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
+        elevation: 0,
       ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            _buildPlayerStats(),
+            const SizedBox(height: 16),
+            _buildInventoryList(),
+          ],
+        ),
+      ),
+      bottomNavigationBar: const BottomNavigation(currentRoute: '/inventory'),
     );
   }
 }

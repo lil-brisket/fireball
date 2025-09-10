@@ -148,7 +148,14 @@ class _StarterPageState extends State<StarterPage> with TickerProviderStateMixin
     );
 
     if (confirmed == true) {
-      await AccountManager.instance.clearCurrentAccount();
+      final accountManager = AccountManager.instance;
+      
+      // Ensure AccountManager is initialized
+      if (!accountManager.isInitialized) {
+        await accountManager.initialize();
+      }
+      
+      await accountManager.clearCurrentAccount();
       if (mounted) {
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(
@@ -550,9 +557,10 @@ class _StarterPageState extends State<StarterPage> with TickerProviderStateMixin
     return Scaffold(
       appBar: AppBar(
         title: Text(_getAppBarTitle()),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
+        elevation: 0,
         centerTitle: true,
-        elevation: 4,
         leading: IconButton(
           icon: const Icon(Icons.logout),
           onPressed: _handleLogout,

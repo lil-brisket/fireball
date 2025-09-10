@@ -214,7 +214,9 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   /// Formats the last login time
-  String _formatLastLogin(DateTime lastLogin) {
+  String _formatLastLogin(DateTime? lastLogin) {
+    if (lastLogin == null) return 'Never';
+    
     final now = DateTime.now();
     final difference = now.difference(lastLogin);
 
