@@ -3,7 +3,7 @@ import '../services/account_manager.dart';
 import '../services/player_data_manager.dart';
 import '../core/widgets/base_screen.dart';
 import 'login_screen.dart';
-import 'main_menu_screen.dart';
+import 'starter_page.dart';
 
 /// Screen for creating new user accounts.
 /// 
@@ -136,11 +136,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
       // Update the player data manager with the new account's player
       await playerDataManager.updatePlayer(account.player, autoSave: false);
 
-      // Navigate to the main menu screen
+      // Navigate to the starter page
       if (mounted) {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
-            builder: (context) => const MainMenuScreen(),
+            builder: (context) => const StarterPage(),
           ),
         );
       }

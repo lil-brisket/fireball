@@ -25,6 +25,8 @@ class PlayerAdapter extends TypeAdapter<Player> {
       defense: fields[7] as int,
       level: fields[9] as int,
       xp: fields[8] as int,
+      walletRyo: fields[16] as int,
+      bankRyo: fields[17] as int,
       availableJutsu: (fields[12] as List?)?.cast<Jutsu>(),
       inventory: (fields[13] as Map?)?.cast<String, InventoryEntry>(),
     )
@@ -39,7 +41,7 @@ class PlayerAdapter extends TypeAdapter<Player> {
   @override
   void write(BinaryWriter writer, Player obj) {
     writer
-      ..writeByte(16)
+      ..writeByte(18)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -71,7 +73,11 @@ class PlayerAdapter extends TypeAdapter<Player> {
       ..writeByte(14)
       ..write(obj.temporaryAttackBuff)
       ..writeByte(15)
-      ..write(obj.temporaryDefenseBuff);
+      ..write(obj.temporaryDefenseBuff)
+      ..writeByte(16)
+      ..write(obj.walletRyo)
+      ..writeByte(17)
+      ..write(obj.bankRyo);
   }
 
   @override

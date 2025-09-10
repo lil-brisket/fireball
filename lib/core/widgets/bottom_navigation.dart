@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shinobi_rpg/screens/main_menu_screen.dart';
 import 'package:shinobi_rpg/screens/enemy_selection_screen.dart';
 import 'package:shinobi_rpg/screens/shop_screen.dart';
 import 'package:shinobi_rpg/screens/settings_screen.dart';

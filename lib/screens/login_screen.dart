@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import '../services/account_manager.dart';
 import '../services/player_data_manager.dart';
 import '../models/account.dart';
-import '../core/widgets/base_screen.dart';
 import 'register_screen.dart';
-import 'main_menu_screen.dart';
-import 'landing_screen.dart';
+import 'starter_page.dart';
 
 /// Screen for logging into the single existing account.
 /// 
@@ -141,11 +139,11 @@ class _LoginScreenState extends State<LoginScreen> {
       print('DEBUG: Login - Updated PlayerDataManager with player: ${account.player.name}');
       print('DEBUG: Login - PlayerDataManager currentPlayer: ${playerDataManager.currentPlayer?.name}');
 
-      // Navigate to the main menu screen
+      // Navigate to the starter page
       if (mounted) {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
-            builder: (context) => const MainMenuScreen(),
+            builder: (context) => const StarterPage(),
           ),
         );
       }
@@ -401,6 +399,7 @@ class _LoginScreenState extends State<LoginScreen> {
       child: TextFormField(
         controller: controller,
         obscureText: obscureText,
+        textAlignVertical: TextAlignVertical.center,
         decoration: InputDecoration(
           labelText: label,
           hintText: hint,
@@ -409,9 +408,17 @@ class _LoginScreenState extends State<LoginScreen> {
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide.none,
           ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
+          ),
           filled: true,
           fillColor: Colors.white,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
           labelStyle: TextStyle(
             color: Colors.purple[600],
             fontSize: 14,
@@ -419,12 +426,14 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
           hintStyle: TextStyle(
             color: Colors.grey[400],
-            fontSize: 14,
+            fontSize: 16,
           ),
+          floatingLabelBehavior: FloatingLabelBehavior.never,
         ),
         style: const TextStyle(
           color: Colors.black87,
           fontSize: 16,
+          height: 1.0,
         ),
         validator: validator,
       ),

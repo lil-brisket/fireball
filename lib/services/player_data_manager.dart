@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import '../models/player.dart';
 import 'save_load_service.dart';
 import 'account_manager.dart';
@@ -9,6 +10,7 @@ import 'account_manager.dart';
 /// - Automatic saving of player progress
 /// - Integration with the save/load system
 /// - Player state management across the app
+/// - Reactive state updates using ValueNotifier
 /// 
 /// Example:
 /// ```dart
@@ -16,7 +18,7 @@ import 'account_manager.dart';
 /// await playerManager.initialize();
 /// final player = playerManager.currentPlayer;
 /// ```
-class PlayerDataManager {
+class PlayerDataManager extends ChangeNotifier {
   static final PlayerDataManager _instance = PlayerDataManager._internal();
   factory PlayerDataManager() => _instance;
   PlayerDataManager._internal();
@@ -28,11 +30,27 @@ class PlayerDataManager {
   AccountManager? _accountManager;
   bool _isInitialized = false;
 
+  // Reactive notifiers for specific player properties
+  final ValueNotifier<int> _walletRyoNotifier = ValueNotifier<int>(0);
+  final ValueNotifier<int> _bankRyoNotifier = ValueNotifier<int>(0);
+  final ValueNotifier<int> _xpNotifier = ValueNotifier<int>(0);
+  final ValueNotifier<int> _levelNotifier = ValueNotifier<int>(1);
+  final ValueNotifier<int> _currentHpNotifier = ValueNotifier<int>(100);
+  final ValueNotifier<int> _currentChakraNotifier = ValueNotifier<int>(50);
+
   /// Gets the current player instance
   Player? get currentPlayer => _currentPlayer;
 
   /// Checks if the manager is initialized
   bool get isInitialized => _isInitialized;
+
+  // Reactive notifier getters
+  ValueNotifier<int> get walletRyoNotifier => _walletRyoNotifier;
+  ValueNotifier<int> get bankRyoNotifier => _bankRyoNotifier;
+  ValueNotifier<int> get xpNotifier => _xpNotifier;
+  ValueNotifier<int> get levelNotifier => _levelNotifier;
+  ValueNotifier<int> get currentHpNotifier => _currentHpNotifier;
+  ValueNotifier<int> get currentChakraNotifier => _currentChakraNotifier;
 
   /// Initializes the player data manager and loads saved data
   /// 
@@ -62,6 +80,9 @@ class PlayerDataManager {
       _currentPlayer = await _saveLoadService!.loadCurrentPlayer();
       print('DEBUG: PlayerDataManager - Loaded player from legacy system: ${_currentPlayer?.name ?? "null"}');
     }
+    
+    // Initialize reactive notifiers with current player data
+    _updateReactiveNotifiers();
     
     _isInitialized = true;
     print('DEBUG: PlayerDataManager - Initialization complete');
@@ -156,6 +177,9 @@ class PlayerDataManager {
     _currentPlayer = player;
     print('DEBUG: PlayerDataManager - Current player set to: ${_currentPlayer?.name}');
     
+    // Update reactive notifiers
+    _updateReactiveNotifiers();
+    
     if (autoSave) {
       // Save to account system if available, otherwise fallback to old system
       if (_accountManager != null && _accountManager!.currentAccount != null) {
@@ -167,6 +191,21 @@ class PlayerDataManager {
       }
     } else {
       print('DEBUG: PlayerDataManager - Auto-save disabled, skipping save');
+    }
+  }
+
+  /// Updates all reactive notifiers with current player data
+  void _updateReactiveNotifiers() {
+    if (_currentPlayer != null) {
+      _walletRyoNotifier.value = _currentPlayer!.walletRyo;
+      _bankRyoNotifier.value = _currentPlayer!.bankRyo;
+      _xpNotifier.value = _currentPlayer!.xp;
+      _levelNotifier.value = _currentPlayer!.level;
+      _currentHpNotifier.value = _currentPlayer!.currentHp;
+      _currentChakraNotifier.value = _currentPlayer!.currentChakra;
+      
+      // Notify listeners of the change
+      notifyListeners();
     }
   }
 
@@ -256,14 +295,25 @@ class PlayerDataManager {
   }
 
   /// Cleans up resources
+  @override
   Future<void> dispose() async {
     if (_isInitialized) {
       await _saveLoadService!.dispose();
       await _accountManager!.dispose();
+      
+      // Dispose reactive notifiers
+      _walletRyoNotifier.dispose();
+      _bankRyoNotifier.dispose();
+      _xpNotifier.dispose();
+      _levelNotifier.dispose();
+      _currentHpNotifier.dispose();
+      _currentChakraNotifier.dispose();
+      
       _currentPlayer = null;
       _saveLoadService = null;
       _accountManager = null;
       _isInitialized = false;
     }
+    super.dispose();
   }
 }

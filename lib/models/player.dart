@@ -84,6 +84,14 @@ class Player {
   /// Temporary defense buff (resets after battle)
   @HiveField(15)
   int temporaryDefenseBuff;
+  
+  /// Player's wallet Ryo (can be spent or stolen)
+  @HiveField(16)
+  int walletRyo;
+  
+  /// Player's bank Ryo (safe storage)
+  @HiveField(17)
+  int bankRyo;
 
   /// Creates a new Player instance
   /// 
@@ -95,6 +103,8 @@ class Player {
   /// [defense] - Defense stat for damage reduction (default: 5)
   /// [level] - Starting level (default: 1)
   /// [xp] - Starting experience points (default: 0)
+  /// [walletRyo] - Starting wallet Ryo (default: 500)
+  /// [bankRyo] - Starting bank Ryo (default: 500)
   /// [availableJutsu] - List of available jutsu (default: empty list)
   /// [inventory] - Player's inventory (default: empty with starter items)
   Player({
@@ -106,6 +116,8 @@ class Player {
     this.defense = 5,
     this.level = 1,
     this.xp = 0,
+    this.walletRyo = 500,
+    this.bankRyo = 500,
     List<Jutsu>? availableJutsu,
     Map<String, InventoryEntry>? inventory,
   }) : currentHp = maxHp,
@@ -383,6 +395,49 @@ class Player {
     isDefending = false;
     resetTemporaryBuffs();
   }
+
+  /// Deposits Ryo from wallet to bank
+  /// 
+  /// [amount] - Amount to deposit
+  /// Returns true if successful, false if insufficient wallet funds
+  bool depositToBank(int amount) {
+    if (amount <= 0 || amount > walletRyo) {
+      return false;
+    }
+    walletRyo -= amount;
+    bankRyo += amount;
+    return true;
+  }
+
+  /// Withdraws Ryo from bank to wallet
+  /// 
+  /// [amount] - Amount to withdraw
+  /// Returns true if successful, false if insufficient bank funds
+  bool withdrawFromBank(int amount) {
+    if (amount <= 0 || amount > bankRyo) {
+      return false;
+    }
+    bankRyo -= amount;
+    walletRyo += amount;
+    return true;
+  }
+
+  /// Transfers Ryo to another player's bank
+  /// 
+  /// [amount] - Amount to transfer
+  /// [recipient] - Player to receive the transfer
+  /// Returns true if successful, false if insufficient bank funds
+  bool transferToPlayer(int amount, Player recipient) {
+    if (amount <= 0 || amount > bankRyo) {
+      return false;
+    }
+    bankRyo -= amount;
+    recipient.bankRyo += amount;
+    return true;
+  }
+
+  /// Gets total Ryo (wallet + bank)
+  int get totalRyo => walletRyo + bankRyo;
 
   @override
   String toString() {

@@ -424,7 +424,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             color: Theme.of(context).iconTheme.color,
           ),
           onPressed: _openSettings,
-          tooltip: 'Edit Profile',
+          tooltip: 'Settings',
         ),
       ],
       body: Column(
@@ -449,13 +449,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   _buildPlayerStats(),
                   const SizedBox(height: 16),
                   
-                  // Edit profile button
+                  // Settings button with gear icon
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(
                       onPressed: _openSettings,
-                      icon: const Icon(Icons.edit),
-                      label: const Text('Edit Profile'),
+                      icon: const Icon(Icons.settings),
+                      label: const Text('Settings'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue[600],
                         foregroundColor: Theme.of(context).colorScheme.onSurface,
@@ -471,8 +471,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
           ),
-          // Bottom navigation
-          BottomNavigation(currentRoute: '/profile'),
         ],
       ),
     );
