@@ -11,10 +11,12 @@ import 'package:shinobi_rpg/screens/profile_screen.dart';
 /// with a horizontal layout of menu buttons at the bottom.
 class BottomNavigation extends StatelessWidget {
   final String currentRoute;
+  final Function(int)? onTabChanged;
   
   const BottomNavigation({
     super.key,
     required this.currentRoute,
+    this.onTabChanged,
   });
 
   @override
@@ -136,52 +138,74 @@ class BottomNavigation extends StatelessWidget {
 
   /// Handles navigation to different screens
   void _handleNavigation(BuildContext context, String route) {
-    switch (route) {
-      case '/main_menu':
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const MainMenuScreen(),
-          ),
-          (route) => false,
-        );
-        break;
-      case '/village-hub':
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const VillageHubScreen(),
-          ),
-          (route) => false,
-        );
-        break;
-      case '/map':
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const MapScreen(),
-          ),
-          (route) => false,
-        );
-        break;
-      case '/inventory':
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const InventoryScreen(),
-          ),
-          (route) => false,
-        );
-        break;
-      case '/profile':
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const ProfileScreen(),
-          ),
-          (route) => false,
-        );
-        break;
+    // If we have a tab change callback, use it for tab-based navigation
+    if (onTabChanged != null) {
+      switch (route) {
+        case '/main_menu':
+          onTabChanged!(0);
+          break;
+        case '/village-hub':
+          onTabChanged!(1);
+          break;
+        case '/map':
+          onTabChanged!(2);
+          break;
+        case '/inventory':
+          onTabChanged!(3);
+          break;
+        case '/profile':
+          onTabChanged!(4);
+          break;
+      }
+    } else {
+      // Fallback to old navigation method for backward compatibility
+      switch (route) {
+        case '/main_menu':
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const MainMenuScreen(),
+            ),
+            (route) => false,
+          );
+          break;
+        case '/village-hub':
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const VillageHubScreen(),
+            ),
+            (route) => false,
+          );
+          break;
+        case '/map':
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const MapScreen(),
+            ),
+            (route) => false,
+          );
+          break;
+        case '/inventory':
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const InventoryScreen(),
+            ),
+            (route) => false,
+          );
+          break;
+        case '/profile':
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const ProfileScreen(),
+            ),
+            (route) => false,
+          );
+          break;
+      }
     }
   }
 

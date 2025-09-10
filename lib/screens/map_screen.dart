@@ -16,17 +16,24 @@ import '../core/widgets/bottom_navigation.dart';
 /// );
 /// ```
 class MapScreen extends StatelessWidget {
-  const MapScreen({super.key});
+  final bool showAppBar;
+  final bool showBottomNavigation;
+  
+  const MapScreen({
+    super.key,
+    this.showAppBar = true,
+    this.showBottomNavigation = true,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: showAppBar ? AppBar(
         title: const Text('🗺️ World Map'),
         backgroundColor: Theme.of(context).colorScheme.surface,
         foregroundColor: Theme.of(context).colorScheme.onSurface,
         elevation: 0,
-      ),
+      ) : null,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
@@ -86,7 +93,7 @@ class MapScreen extends StatelessWidget {
           ),
         ),
       ),
-      bottomNavigationBar: const BottomNavigation(currentRoute: '/map'),
+      bottomNavigationBar: showBottomNavigation ? const BottomNavigation(currentRoute: '/map') : null,
     );
   }
 

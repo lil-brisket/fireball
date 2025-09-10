@@ -21,7 +21,14 @@ import 'landing_screen.dart';
 /// );
 /// ```
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+  final bool showAppBar;
+  final bool showBottomNavigation;
+  
+  const ProfileScreen({
+    super.key,
+    this.showAppBar = true,
+    this.showBottomNavigation = true,
+  });
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -422,7 +429,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: widget.showAppBar ? AppBar(
         title: const Text('🥷 Profile'),
         backgroundColor: Theme.of(context).colorScheme.surface,
         foregroundColor: Theme.of(context).colorScheme.onSurface,
@@ -437,7 +444,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             tooltip: 'Settings',
           ),
         ],
-      ),
+      ) : null,
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
@@ -479,7 +486,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ],
               ),
             ),
-      bottomNavigationBar: const BottomNavigation(currentRoute: '/profile'),
+      bottomNavigationBar: widget.showBottomNavigation ? const BottomNavigation(currentRoute: '/profile') : null,
     );
   }
 }

@@ -24,7 +24,14 @@ import 'mission_screen.dart';
 /// );
 /// ```
 class VillageHubScreen extends StatefulWidget {
-  const VillageHubScreen({super.key});
+  final bool showAppBar;
+  final bool showBottomNavigation;
+  
+  const VillageHubScreen({
+    super.key,
+    this.showAppBar = true,
+    this.showBottomNavigation = true,
+  });
 
   @override
   State<VillageHubScreen> createState() => _VillageHubScreenState();
@@ -123,12 +130,12 @@ class _VillageHubScreenState extends State<VillageHubScreen> with TickerProvider
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: widget.showAppBar ? AppBar(
         title: const Text('🏘️ Village Hub'),
         backgroundColor: Theme.of(context).colorScheme.surface,
         foregroundColor: Theme.of(context).colorScheme.onSurface,
         elevation: 0,
-      ),
+      ) : null,
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : FadeTransition(
@@ -223,7 +230,7 @@ class _VillageHubScreenState extends State<VillageHubScreen> with TickerProvider
                 ),
               ),
             ),
-      bottomNavigationBar: const BottomNavigation(currentRoute: '/village-hub'),
+      bottomNavigationBar: widget.showBottomNavigation ? const BottomNavigation(currentRoute: '/village-hub') : null,
     );
   }
 }

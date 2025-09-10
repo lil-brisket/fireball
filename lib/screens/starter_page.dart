@@ -9,6 +9,12 @@ import 'inventory_screen.dart';
 import 'profile_screen.dart';
 import 'map_screen.dart';
 import 'village_hub_screen.dart';
+import 'main_navigation_screen.dart';
+import 'bank_screen.dart';
+import 'shop_screen.dart';
+import 'training_dojo_screen.dart';
+import 'quest_screen.dart';
+import 'mission_screen.dart';
 
 /// Main starter page with bottom navigation tabs for the Shinobi RPG game.
 /// 
@@ -454,15 +460,237 @@ class _StarterPageState extends State<StarterPage> with TickerProviderStateMixin
 
   /// Builds the village hub tab content
   Widget _buildVillageHubTab() {
-    return const VillageHubScreen();
+    return _buildVillageHubContent();
+  }
+
+  /// Builds the village hub content without AppBar and BottomNavigation
+  Widget _buildVillageHubContent() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Village locations grid
+          GridView.count(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisCount: 2,
+            crossAxisSpacing: 0,
+            mainAxisSpacing: 0,
+            childAspectRatio: 0.15,
+            children: [
+              _buildVillageLocation(
+                'Bank',
+                Icons.account_balance,
+                Colors.blue,
+                () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const BankScreen(),
+                  ),
+                ),
+              ),
+              _buildVillageLocation(
+                'Shop',
+                Icons.store,
+                Colors.green,
+                () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ShopScreen(),
+                  ),
+                ),
+              ),
+              _buildVillageLocation(
+                'Training Dojo',
+                Icons.fitness_center,
+                Colors.purple,
+                () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const TrainingDojoScreen(),
+                  ),
+                ),
+              ),
+              _buildVillageLocation(
+                'Battle',
+                Icons.flash_on,
+                Colors.red,
+                () {
+                  // TODO: Implement battle navigation
+                },
+              ),
+              _buildVillageLocation(
+                'Quests',
+                Icons.assignment,
+                Colors.orange,
+                () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const QuestScreen(),
+                  ),
+                ),
+              ),
+              _buildVillageLocation(
+                'Missions',
+                Icons.flag,
+                Colors.teal,
+                () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const MissionScreen(),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Builds a village location card
+  Widget _buildVillageLocation(String title, IconData icon, Color color, VoidCallback onTap) {
+    return Card(
+      elevation: 0,
+      margin: EdgeInsets.zero,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(1),
+        child: Padding(
+          padding: const EdgeInsets.all(0.5),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                icon,
+                color: color,
+                size: 6,
+              ),
+              Text(
+                title,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 5,
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
 
   /// Builds the map tab content
   Widget _buildMapTab() {
-    return const MapScreen();
+    return _buildMapContent();
   }
 
+  /// Builds the map content without AppBar and BottomNavigation
+  Widget _buildMapContent() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.map,
+              size: 120,
+              color: Colors.grey[400],
+            ),
+            const SizedBox(height: 32),
+            Text(
+              'Coming Soon',
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                color: Colors.grey[600],
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Explore different regions and encounter enemies',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Colors.grey[500],
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 32),
+            Card(
+              elevation: 4,
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  children: [
+                    Icon(
+                      Icons.explore,
+                      size: 48,
+                      color: Colors.blue[600],
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Future Features',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    _buildFeatureItem('Region Navigation', Icons.location_on),
+                    _buildFeatureItem('Random Encounters', Icons.flash_on),
+                    _buildFeatureItem('Hidden Locations', Icons.explore),
+                    _buildFeatureItem('Boss Battles', Icons.sports_mma),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Builds a feature item for the future features list
+  Widget _buildFeatureItem(String title, IconData icon) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        children: [
+          Icon(
+            icon,
+            size: 20,
+            color: Colors.blue[600],
+          ),
+          const SizedBox(width: 12),
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Builds the inventory content without AppBar and BottomNavigation
+  Widget _buildInventoryContent() {
+    return const Center(
+      child: Text('Inventory Content - Coming Soon'),
+    );
+  }
+
+  /// Builds the profile content without AppBar and BottomNavigation
+  Widget _buildProfileContent() {
+    return const Center(
+      child: Text('Profile Content - Coming Soon'),
+    );
+  }
 
   /// Builds the bottom navigation bar
   Widget _buildBottomNavigation() {
@@ -544,9 +772,9 @@ class _StarterPageState extends State<StarterPage> with TickerProviderStateMixin
       case 2:
         return _buildMapTab();
       case 3:
-        return const InventoryScreen();
+        return _buildInventoryContent();
       case 4:
-        return const ProfileScreen();
+        return _buildProfileContent();
       default:
         return _buildHomeTab();
     }

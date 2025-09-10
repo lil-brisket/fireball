@@ -20,7 +20,14 @@ import '../core/widgets/bottom_navigation.dart';
 /// );
 /// ```
 class InventoryScreen extends StatefulWidget {
-  const InventoryScreen({super.key});
+  final bool showAppBar;
+  final bool showBottomNavigation;
+  
+  const InventoryScreen({
+    super.key,
+    this.showAppBar = true,
+    this.showBottomNavigation = true,
+  });
 
   @override
   State<InventoryScreen> createState() => _InventoryScreenState();
@@ -471,12 +478,12 @@ class _InventoryScreenState extends State<InventoryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: widget.showAppBar ? AppBar(
         title: const Text('🥷 Inventory'),
         backgroundColor: Theme.of(context).colorScheme.surface,
         foregroundColor: Theme.of(context).colorScheme.onSurface,
         elevation: 0,
-      ),
+      ) : null,
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -487,7 +494,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: const BottomNavigation(currentRoute: '/inventory'),
+      bottomNavigationBar: widget.showBottomNavigation ? const BottomNavigation(currentRoute: '/inventory') : null,
     );
   }
 }
