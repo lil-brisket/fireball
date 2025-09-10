@@ -208,13 +208,13 @@ class _VillageHubContentState extends State<VillageHubContent> with TickerProvid
   /// Builds a village location card
   Widget _buildVillageLocation(String title, IconData icon, Color color, VoidCallback onTap) {
     return Card(
-      elevation: 0,
+      elevation: 2,
       margin: EdgeInsets.zero,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(1),
+        borderRadius: BorderRadius.circular(8),
         child: Padding(
-          padding: const EdgeInsets.all(0.5),
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
@@ -222,16 +222,17 @@ class _VillageHubContentState extends State<VillageHubContent> with TickerProvid
               Icon(
                 icon,
                 color: color,
-                size: 6,
+                size: 32,
               ),
+              const SizedBox(height: 8),
               Text(
                 title,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.bold,
-                  fontSize: 5,
+                  fontSize: 14,
                 ),
                 textAlign: TextAlign.center,
-                maxLines: 1,
+                maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
             ],
@@ -246,18 +247,16 @@ class _VillageHubContentState extends State<VillageHubContent> with TickerProvid
     return FadeTransition(
       opacity: _fadeAnimation,
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Village locations grid
-            GridView.count(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisCount: 2,
-              crossAxisSpacing: 0,
-              mainAxisSpacing: 0,
-              childAspectRatio: 0.15,
+            Expanded(
+              child: GridView.count(
+                crossAxisCount: 2,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+                childAspectRatio: 1.1,
               children: [
                 _buildVillageLocation(
                   'Bank',
@@ -323,6 +322,7 @@ class _VillageHubContentState extends State<VillageHubContent> with TickerProvid
                   ),
                 ),
               ],
+              ),
             ),
           ],
         ),

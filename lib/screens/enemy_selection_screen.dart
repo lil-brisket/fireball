@@ -231,7 +231,7 @@ class _EnemySelectionScreenState extends State<EnemySelectionScreen> {
                 ),
                 child: Icon(
                   enemyIcon,
-                  color: difficultyColor,
+                  color: Colors.black,
                   size: 30,
                 ),
               ),
@@ -248,7 +248,7 @@ class _EnemySelectionScreenState extends State<EnemySelectionScreen> {
                           enemy.name,
                           style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: Colors.black,
                             fontSize: 16,
                           ),
                         ),

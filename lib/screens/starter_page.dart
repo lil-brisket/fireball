@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../models/player.dart';
 import '../models/account.dart';
+import '../models/item.dart';
 import '../services/player_data_manager.dart';
 import '../services/account_manager.dart';
 import 'landing_screen.dart';
@@ -15,6 +16,8 @@ import 'shop_screen.dart';
 import 'training_dojo_screen.dart';
 import 'quest_screen.dart';
 import 'mission_screen.dart';
+import 'settings_screen.dart';
+import 'enemy_selection_screen.dart';
 
 /// Main starter page with bottom navigation tabs for the Shinobi RPG game.
 /// 
@@ -131,6 +134,19 @@ class _StarterPageState extends State<StarterPage> with TickerProviderStateMixin
         _isLoading = false;
       });
     }
+  }
+
+  /// Opens the settings screen
+  void _openSettings() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const SettingsScreen(),
+      ),
+    ).then((_) {
+      // Refresh account data when returning from settings
+      _loadPlayerData();
+    });
   }
 
   /// Handles logout
@@ -466,18 +482,16 @@ class _StarterPageState extends State<StarterPage> with TickerProviderStateMixin
   /// Builds the village hub content without AppBar and BottomNavigation
   Widget _buildVillageHubContent() {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(4.0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Village locations grid
-          GridView.count(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            crossAxisCount: 2,
-            crossAxisSpacing: 0,
-            mainAxisSpacing: 0,
-            childAspectRatio: 0.15,
+          Expanded(
+            child: GridView.count(
+              crossAxisCount: 2,
+              crossAxisSpacing: 2,
+              mainAxisSpacing: 2,
+              childAspectRatio: 2.5,
             children: [
               _buildVillageLocation(
                 'Bank',
@@ -517,7 +531,21 @@ class _StarterPageState extends State<StarterPage> with TickerProviderStateMixin
                 Icons.flash_on,
                 Colors.red,
                 () {
-                  // TODO: Implement battle navigation
+                  if (_player != null) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EnemySelectionScreen(player: _player!),
+                      ),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Player data not available'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
                 },
               ),
               _buildVillageLocation(
@@ -543,6 +571,7 @@ class _StarterPageState extends State<StarterPage> with TickerProviderStateMixin
                 ),
               ),
             ],
+            ),
           ),
         ],
       ),
@@ -556,9 +585,9 @@ class _StarterPageState extends State<StarterPage> with TickerProviderStateMixin
       margin: EdgeInsets.zero,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(1),
+        borderRadius: BorderRadius.circular(4),
         child: Padding(
-          padding: const EdgeInsets.all(0.5),
+          padding: const EdgeInsets.all(3.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
@@ -566,16 +595,17 @@ class _StarterPageState extends State<StarterPage> with TickerProviderStateMixin
               Icon(
                 icon,
                 color: color,
-                size: 6,
+                size: 20,
               ),
+              const SizedBox(height: 1),
               Text(
                 title,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   fontWeight: FontWeight.bold,
-                  fontSize: 5,
+                  fontSize: 10,
                 ),
                 textAlign: TextAlign.center,
-                maxLines: 1,
+                maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
             ],
@@ -680,17 +710,635 @@ class _StarterPageState extends State<StarterPage> with TickerProviderStateMixin
 
   /// Builds the inventory content without AppBar and BottomNavigation
   Widget _buildInventoryContent() {
-    return const Center(
-      child: Text('Inventory Content - Coming Soon'),
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        children: [
+          _buildPlayerStatsForInventory(),
+          const SizedBox(height: 16),
+          _buildInventoryListForStarter(),
+        ],
+      ),
     );
   }
 
   /// Builds the profile content without AppBar and BottomNavigation
   Widget _buildProfileContent() {
-    return const Center(
-      child: Text('Profile Content - Coming Soon'),
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        children: [
+          // Avatar display
+          Center(
+            child: _buildAvatarDisplayForStarter(),
+          ),
+          const SizedBox(height: 24),
+          
+          // Profile information
+          _buildProfileInfoForStarter(),
+          const SizedBox(height: 16),
+          
+          // Player statistics
+          _buildPlayerStatsForProfile(),
+          const SizedBox(height: 16),
+          
+          // Settings button
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: _openSettings,
+              icon: const Icon(Icons.settings),
+              label: const Text('Settings'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue[600],
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
+
+  /// Builds player stats for inventory tab
+  Widget _buildPlayerStatsForInventory() {
+    if (_player == null) {
+      return const Card(
+        child: Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Center(
+            child: Text('No player data available'),
+          ),
+        ),
+      );
+    }
+
+    return Card(
+      elevation: 4,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.person, color: Colors.blue, size: 24),
+                const SizedBox(width: 8),
+                Text(
+                  _player!.name,
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    color: Colors.blue,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.shade100,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.blue.shade300),
+                  ),
+                  child: Text(
+                    'Level ${_player!.level}',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Colors.blue.shade700,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildStatDisplay(
+                    'HP',
+                    '${_player!.currentHp}/${_player!.maxHp}',
+                    Colors.green,
+                    Icons.favorite,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: _buildStatDisplay(
+                    'Chakra',
+                    '${_player!.currentChakra}/${_player!.maxChakra}',
+                    Colors.blue,
+                    Icons.bolt,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildStatDisplay(
+                    'XP',
+                    '${_player!.xp}/${_player!.xpToNextLevel}',
+                    Colors.amber,
+                    Icons.star,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: _buildStatDisplay(
+                    'Items',
+                    '${_player!.inventory.length}',
+                    Colors.purple,
+                    Icons.inventory,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Builds a stat display widget
+  Widget _buildStatDisplay(String label, String value, Color color, IconData icon) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: color.withOpacity(0.3)),
+      ),
+      child: Column(
+        children: [
+          Icon(icon, color: color, size: 20),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: color,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Text(
+            value,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: color,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Builds the inventory list for starter page
+  Widget _buildInventoryListForStarter() {
+    if (_player == null || _player!.inventory.isEmpty) {
+      return Card(
+        elevation: 4,
+        child: Padding(
+          padding: const EdgeInsets.all(32.0),
+          child: Column(
+            children: [
+              Icon(
+                Icons.inventory_2_outlined,
+                size: 64,
+                color: Colors.grey[400],
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Inventory Empty',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  color: Colors.grey[600],
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Your inventory is empty. Items will appear here when you collect them.',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Colors.grey[500],
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return Card(
+      elevation: 4,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Inventory (${_player!.inventory.length} items)',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16),
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: _player!.inventory.length,
+              itemBuilder: (context, index) {
+                final entry = _player!.inventory.values.elementAt(index);
+                return _buildInventoryItem(entry);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Builds an individual inventory item
+  Widget _buildInventoryItem(InventoryEntry entry) {
+    final item = entry.item;
+    final quantity = entry.quantity;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.grey[50],
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.grey[300]!),
+      ),
+      child: Row(
+        children: [
+          // Item icon based on type
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: _getItemTypeColor(item.type).withOpacity(0.4),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: _getItemTypeColor(item.type)),
+            ),
+            child: Icon(
+              _getItemTypeIcon(item.type),
+              color: _getItemTypeColor(item.type),
+              size: 20,
+            ),
+          ),
+          const SizedBox(width: 12),
+          // Item details
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  item.name,
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  item.description,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Colors.grey[600],
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: _getItemTypeColor(item.type).withOpacity(0.4),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        _getItemTypeName(item.type),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: _getItemTypeColor(item.type),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'x$quantity',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Colors.grey[600],
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Gets the color for an item type
+  Color _getItemTypeColor(ItemType type) {
+    switch (type) {
+      case ItemType.healing:
+        return Colors.green;
+      case ItemType.chakra:
+        return Colors.blue;
+      case ItemType.buff:
+        return Colors.purple;
+    }
+  }
+
+  /// Gets the icon for an item type
+  IconData _getItemTypeIcon(ItemType type) {
+    switch (type) {
+      case ItemType.healing:
+        return Icons.favorite;
+      case ItemType.chakra:
+        return Icons.bolt;
+      case ItemType.buff:
+        return Icons.auto_awesome;
+    }
+  }
+
+  /// Gets the display name for an item type
+  String _getItemTypeName(ItemType type) {
+    switch (type) {
+      case ItemType.healing:
+        return 'Healing';
+      case ItemType.chakra:
+        return 'Chakra';
+      case ItemType.buff:
+        return 'Buff';
+    }
+  }
+
+  /// Builds avatar display for starter page
+  Widget _buildAvatarDisplayForStarter() {
+    return Container(
+      width: 120,
+      height: 120,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Colors.purple.shade300,
+          width: 3,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.purple.withOpacity(0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(9),
+        child: _account?.avatar != null && _account!.avatar!.isNotEmpty
+            ? Image.network(
+                _account!.avatar!,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return _buildDefaultAvatarForStarter();
+                },
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                },
+              )
+            : _buildDefaultAvatarForStarter(),
+      ),
+    );
+  }
+
+  /// Builds the default avatar for starter page
+  Widget _buildDefaultAvatarForStarter() {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Colors.purple.shade400,
+            Colors.blue.shade400,
+          ],
+        ),
+      ),
+      child: Center(
+        child: Icon(
+          Icons.person,
+          size: 50,
+          color: Theme.of(context).colorScheme.onSurface,
+        ),
+      ),
+    );
+  }
+
+  /// Builds profile info for starter page
+  Widget _buildProfileInfoForStarter() {
+    if (_account == null) {
+      return Card(
+        elevation: 4,
+        color: Theme.of(context).colorScheme.surface,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              Icon(
+                Icons.person_outline,
+                size: 48,
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'No Account Data',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return Card(
+      elevation: 4,
+      color: Theme.of(context).colorScheme.surface,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.person, color: Colors.blue, size: 24),
+                const SizedBox(width: 8),
+                Text(
+                  'Profile Information',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            _buildInfoRow('Username', _account!.username, Icons.person_outline),
+            const SizedBox(height: 8),
+            _buildInfoRow('Email', _account!.email, Icons.email),
+            const SizedBox(height: 8),
+            _buildInfoRow('Gender', _account!.gender, Icons.person),
+            const SizedBox(height: 8),
+            _buildInfoRow('Character Name', _account!.player.name, Icons.face),
+            const SizedBox(height: 8),
+            _buildInfoRow('Level', '${_account!.player.level}', Icons.star),
+            const SizedBox(height: 8),
+            _buildInfoRow('XP', '${_account!.player.xp}/${_account!.player.xpToNextLevel}', Icons.trending_up),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Builds a single information row
+  Widget _buildInfoRow(String label, String value, IconData icon) {
+    return Row(
+      children: [
+        Icon(icon, color: Theme.of(context).iconTheme.color, size: 20),
+        const SizedBox(width: 8),
+        Text(
+          '$label:',
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            value,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w500,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Builds player stats for profile tab
+  Widget _buildPlayerStatsForProfile() {
+    if (_account == null) return const SizedBox.shrink();
+
+    return Card(
+      elevation: 4,
+      color: Theme.of(context).colorScheme.surface,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.analytics, color: Colors.green, size: 24),
+                const SizedBox(width: 8),
+                Text(
+                  'Player Statistics',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildStatCard(
+                    'HP',
+                    '${_account!.player.currentHp}/${_account!.player.maxHp}',
+                    Colors.red,
+                    Icons.favorite,
+                    _account!.player.hpPercentage,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _buildStatCard(
+                    'Chakra',
+                    '${_account!.player.currentChakra}/${_account!.player.maxChakra}',
+                    Colors.blue,
+                    Icons.bolt,
+                    _account!.player.chakraPercentage,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildStatCard(
+                    'Strength',
+                    '${_account!.player.strength}',
+                    Colors.orange,
+                    Icons.fitness_center,
+                    1.0,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _buildStatCard(
+                    'Defense',
+                    '${_account!.player.defense}',
+                    Colors.purple,
+                    Icons.shield,
+                    1.0,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildStatCard(
+                    'Jutsu',
+                    '${_account!.player.availableJutsu.length}',
+                    Colors.teal,
+                    Icons.auto_awesome,
+                    1.0,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _buildStatCard(
+                    'Items',
+                    '${_account!.player.inventory.length}',
+                    Colors.indigo,
+                    Icons.inventory,
+                    1.0,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
 
   /// Builds the bottom navigation bar
   Widget _buildBottomNavigation() {
